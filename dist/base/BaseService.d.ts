@@ -1,9 +1,42 @@
-/**
- * © 2026 Rana J.
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
 import { PrismaClient } from "@prisma/client";
+/**
+ * 🏢 PrismaModelDelegate
+ * Generic interface for Prisma model delegates to ensure type safety without 'any'.
+ */
+export interface PrismaModelDelegate<T> {
+    create(args: {
+        data: Partial<T>;
+    }): Promise<T>;
+    findUnique(args: {
+        where: any;
+    }): Promise<T | null>;
+    findFirst(args?: any): Promise<T | null>;
+    findMany(args?: any): Promise<T[]>;
+    update(args: {
+        where: any;
+        data: Partial<T>;
+    }): Promise<T>;
+    updateMany(args: {
+        where: any;
+        data: Partial<T>;
+    }): Promise<{
+        count: number;
+    }>;
+    delete(args: {
+        where: any;
+    }): Promise<T>;
+    deleteMany(args: {
+        where: any;
+    }): Promise<{
+        count: number;
+    }>;
+    count(args?: any): Promise<number>;
+    createMany?(args: {
+        data: Partial<T>[];
+    }): Promise<{
+        count: number;
+    }>;
+}
 /**
  * 🛠️ BaseService
  * Provides common CRUD operations for all services.
@@ -12,7 +45,7 @@ import { PrismaClient } from "@prisma/client";
 export declare class BaseService<T extends Record<string, any>> {
     protected db: PrismaClient;
     protected modelName: string;
-    protected model: any;
+    protected model: PrismaModelDelegate<T>;
     constructor(db: PrismaClient, modelName: string);
     /**
      * Create a new record
@@ -29,7 +62,9 @@ export declare class BaseService<T extends Record<string, any>> {
     /**
      * Update records based on a query
      */
-    update(query: any, data: Partial<T>): Promise<any>;
+    update(query: Record<string, any>, data: Partial<T>): Promise<{
+        count: number;
+    }>;
     /**
      * Delete a record by ID
      */
@@ -37,22 +72,22 @@ export declare class BaseService<T extends Record<string, any>> {
     /**
      * Find many records with optional query parameters
      */
-    findMany(query?: any): Promise<T[]>;
+    findMany(query?: Record<string, any>): Promise<T[]>;
     /**
      * Find the first record matching the query
      */
-    findFirst(query?: any): Promise<T | null>;
+    findFirst(query?: Record<string, any>): Promise<T | null>;
     /**
      * Count records matching the query
      */
-    count(query?: any): Promise<number>;
+    count(query?: Record<string, any>): Promise<number>;
     /**
      * List records with pagination, sorting, and advanced filtering
      */
     list(options?: any, preFilter?: Record<string, any>): Promise<{
-        data: any;
+        data: T[];
         meta: {
-            total: any;
+            total: number;
             page: number;
             limit: number;
             totalPages: number;
@@ -69,13 +104,13 @@ export declare class BaseService<T extends Record<string, any>> {
     /**
      * Update multiple records matching a query
      */
-    updateMany(query: any, data: Partial<T>): Promise<{
+    updateMany(query: Record<string, any>, data: Partial<T>): Promise<{
         count: number;
     }>;
     /**
      * Delete multiple records matching a query
      */
-    deleteMany(query: any): Promise<{
+    deleteMany(query: Record<string, any>): Promise<{
         count: number;
     }>;
 }

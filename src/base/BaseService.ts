@@ -1,12 +1,23 @@
-/**
- * © 2026 Rana J.
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
 import { PrismaClient } from "@prisma/client";
 import logger from "../utils/logger.js";
 import { AppError } from "../utils/AppError.js";
+
+/**
+ * 🏢 PrismaModelDelegate
+ * Generic interface for Prisma model delegates to ensure type safety without 'any'.
+ */
+export interface PrismaModelDelegate<T> {
+    create(args: { data: Partial<T> }): Promise<T>;
+    findUnique(args: { where: any }): Promise<T | null>;
+    findFirst(args?: any): Promise<T | null>;
+    findMany(args?: any): Promise<T[]>;
+    update(args: { where: any; data: Partial<T> }): Promise<T>;
+    updateMany(args: { where: any; data: Partial<T> }): Promise<{ count: number }>;
+    delete(args: { where: any }): Promise<T>;
+    deleteMany(args: { where: any }): Promise<{ count: number }>;
+    count(args?: any): Promise<number>;
+    createMany?(args: { data: Partial<T>[] }): Promise<{ count: number }>;
+}
 
 /**
  * 🛠️ BaseService
@@ -14,13 +25,13 @@ import { AppError } from "../utils/AppError.js";
  * @template T - The model type
  */
 export class BaseService<T extends Record<string, any>> {
-    protected model: any;
+    protected model: PrismaModelDelegate<T>;
 
     constructor(
         protected db: PrismaClient,
         protected modelName: string
     ) {
-        this.model = (this.db as any)[modelName];
+        this.model = (this.db as any)[modelName] as PrismaModelDelegate<T>;
 
         if (!this.model) {
             logger.error(`Model ${modelName} not found in Prisma Client`);
@@ -35,8 +46,9 @@ export class BaseService<T extends Record<string, any>> {
         try {
             logger.info(`Creating ${this.modelName} record`);
             return await this.model.create({ data });
-        } catch (error: any) {
-            logger.error(`Error creating ${this.modelName}: ${error.message}`);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : String(error);
+            logger.error(`Error creating ${this.modelName}: ${message}`);
             throw error;
         }
     }
@@ -47,8 +59,9 @@ export class BaseService<T extends Record<string, any>> {
     async findById(id: string | number): Promise<T | null> {
         try {
             return await this.model.findUnique({ where: { id } });
-        } catch (error: any) {
-            logger.error(`Error finding ${this.modelName} by ID: ${error.message}`);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : String(error);
+            logger.error(`Error finding ${this.modelName} by ID: ${message}`);
             throw error;
         }
     }
@@ -60,8 +73,9 @@ export class BaseService<T extends Record<string, any>> {
         try {
             logger.info(`Updating ${this.modelName} ID: ${id}`);
             return await this.model.update({ where: { id }, data });
-        } catch (error: any) {
-            logger.error(`Error updating ${this.modelName} by ID: ${error.message}`);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : String(error);
+            logger.error(`Error updating ${this.modelName} by ID: ${message}`);
             throw error;
         }
     }
@@ -69,11 +83,12 @@ export class BaseService<T extends Record<string, any>> {
     /**
      * Update records based on a query
      */
-    async update(query: any, data: Partial<T>): Promise<any> {
+    async update(query: Record<string, any>, data: Partial<T>): Promise<{ count: number }> {
         try {
             return await this.model.updateMany({ where: query, data });
-        } catch (error: any) {
-            logger.error(`Error updating ${this.modelName} with query: ${error.message}`);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : String(error);
+            logger.error(`Error updating ${this.modelName} with query: ${message}`);
             throw error;
         }
     }
@@ -85,8 +100,9 @@ export class BaseService<T extends Record<string, any>> {
         try {
             logger.info(`Deleting ${this.modelName} ID: ${id}`);
             return await this.model.delete({ where: { id } });
-        } catch (error: any) {
-            logger.error(`Error deleting ${this.modelName} by ID: ${error.message}`);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : String(error);
+            logger.error(`Error deleting ${this.modelName} by ID: ${message}`);
             throw error;
         }
     }
@@ -94,11 +110,12 @@ export class BaseService<T extends Record<string, any>> {
     /**
      * Find many records with optional query parameters
      */
-    async findMany(query: any = {}): Promise<T[]> {
+    async findMany(query: Record<string, any> = {}): Promise<T[]> {
         try {
             return await this.model.findMany(query);
-        } catch (error: any) {
-            logger.error(`Error in ${this.modelName} findMany: ${error.message}`);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : String(error);
+            logger.error(`Error in ${this.modelName} findMany: ${message}`);
             throw error;
         }
     }
@@ -106,11 +123,12 @@ export class BaseService<T extends Record<string, any>> {
     /**
      * Find the first record matching the query
      */
-    async findFirst(query: any = {}): Promise<T | null> {
+    async findFirst(query: Record<string, any> = {}): Promise<T | null> {
         try {
             return await this.model.findFirst(query);
-        } catch (error: any) {
-            logger.error(`Error in ${this.modelName} findFirst: ${error.message}`);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : String(error);
+            logger.error(`Error in ${this.modelName} findFirst: ${message}`);
             throw error;
         }
     }
@@ -118,11 +136,12 @@ export class BaseService<T extends Record<string, any>> {
     /**
      * Count records matching the query
      */
-    async count(query: any = {}): Promise<number> {
+    async count(query: Record<string, any> = {}): Promise<number> {
         try {
             return await this.model.count({ where: query });
-        } catch (error: any) {
-            logger.error(`Error in ${this.modelName} count: ${error.message}`);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : String(error);
+            logger.error(`Error in ${this.modelName} count: ${message}`);
             throw error;
         }
     }
@@ -240,10 +259,14 @@ export class BaseService<T extends Record<string, any>> {
      */
     async createMany(data: Partial<T>[]): Promise<{ count: number }> {
         try {
+            if (!this.model.createMany) {
+                throw new AppError(`createMany NOT supported for model ${this.modelName}`, 400);
+            }
             logger.info(`Bulk creating ${data.length} ${this.modelName} records`);
             return await this.model.createMany({ data });
-        } catch (error: any) {
-            logger.error(`Error in bulk creating ${this.modelName}: ${error.message}`);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : String(error);
+            logger.error(`Error in bulk creating ${this.modelName}: ${message}`);
             throw error;
         }
     }
@@ -251,12 +274,13 @@ export class BaseService<T extends Record<string, any>> {
     /**
      * Update multiple records matching a query
      */
-    async updateMany(query: any, data: Partial<T>): Promise<{ count: number }> {
+    async updateMany(query: Record<string, any>, data: Partial<T>): Promise<{ count: number }> {
         try {
             logger.info(`Bulk updating ${this.modelName} records`);
             return await this.model.updateMany({ where: query, data });
-        } catch (error: any) {
-            logger.error(`Error in bulk updating ${this.modelName}: ${error.message}`);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : String(error);
+            logger.error(`Error in bulk updating ${this.modelName}: ${message}`);
             throw error;
         }
     }
@@ -264,12 +288,13 @@ export class BaseService<T extends Record<string, any>> {
     /**
      * Delete multiple records matching a query
      */
-    async deleteMany(query: any): Promise<{ count: number }> {
+    async deleteMany(query: Record<string, any>): Promise<{ count: number }> {
         try {
             logger.info(`Bulk deleting ${this.modelName} records`);
             return await this.model.deleteMany({ where: query });
-        } catch (error: any) {
-            logger.error(`Error in bulk deleting ${this.modelName}: ${error.message}`);
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : String(error);
+            logger.error(`Error in bulk deleting ${this.modelName}: ${message}`);
             throw error;
         }
     }

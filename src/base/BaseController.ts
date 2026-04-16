@@ -6,7 +6,8 @@
 
 import { ApiResponse, catchAsync } from "../utils/index.js";
 import { BaseService } from "./BaseService.js";
-import { Request, Response } from "express";
+import { Response } from "express";
+import { AuthenticatedRequest, RequestWithBody } from "../types.js";
 
 /**
  * 🏛️ BaseController
@@ -23,7 +24,7 @@ export class BaseController<T extends Record<string, any>> {
   /**
    * Create a new record
    */
-  handleCreate = catchAsync(async (req: Request, res: Response) => {
+  handleCreate = catchAsync(async (req: RequestWithBody<Partial<T>>, res: Response) => {
     const result = await this.service.create(req.body);
     return ApiResponse.success(
       res,
@@ -36,7 +37,7 @@ export class BaseController<T extends Record<string, any>> {
   /**
    * Find a record by ID
    */
-  handleFindById = catchAsync(async (req: Request, res: Response) => {
+  handleFindById = catchAsync(async (req: AuthenticatedRequest, res: Response) => {
     const result = await this.service.findById(req.params.id as string);
     return ApiResponse.success(
       res,
@@ -49,7 +50,7 @@ export class BaseController<T extends Record<string, any>> {
   /**
    * Update a record by ID
    */
-  handleUpdateById = catchAsync(async (req: Request, res: Response) => {
+  handleUpdateById = catchAsync(async (req: RequestWithBody<Partial<T>>, res: Response) => {
     const result = await this.service.updateById(req.params.id as string, req.body);
     return ApiResponse.success(
       res,
@@ -62,7 +63,7 @@ export class BaseController<T extends Record<string, any>> {
   /**
    * Update records based on filter
    */
-  handleUpdate = catchAsync(async (req: Request, res: Response) => {
+  handleUpdate = catchAsync(async (req: RequestWithBody<{ filter: Record<string, any>; data: Partial<T> }>, res: Response) => {
     const { filter, data } = req.body;
     const result = await this.service.update(filter, data);
     return ApiResponse.success(
@@ -76,7 +77,7 @@ export class BaseController<T extends Record<string, any>> {
   /**
    * Delete a record by ID
    */
-  handleDeleteById = catchAsync(async (req: Request, res: Response) => {
+  handleDeleteById = catchAsync(async (req: AuthenticatedRequest, res: Response) => {
     const result = await this.service.deleteById(req.params.id as string);
     return ApiResponse.success(
       res,
@@ -89,7 +90,7 @@ export class BaseController<T extends Record<string, any>> {
   /**
    * Find many records
    */
-  handleFindMany = catchAsync(async (req: Request, res: Response) => {
+  handleFindMany = catchAsync(async (req: RequestWithBody<Record<string, any>>, res: Response) => {
     const result = await this.service.findMany(req.body);
     return ApiResponse.success(
       res,
@@ -102,7 +103,7 @@ export class BaseController<T extends Record<string, any>> {
   /**
    * Find first record matching query
    */
-  handleFindFirst = catchAsync(async (req: Request, res: Response) => {
+  handleFindFirst = catchAsync(async (req: RequestWithBody<Record<string, any>>, res: Response) => {
     const result = await this.service.findFirst(req.body);
     return ApiResponse.success(
       res,
@@ -115,7 +116,7 @@ export class BaseController<T extends Record<string, any>> {
   /**
    * Count records
    */
-  handleCount = catchAsync(async (req: Request, res: Response) => {
+  handleCount = catchAsync(async (req: RequestWithBody<Record<string, any>>, res: Response) => {
     const result = await this.service.count(req.body);
     return ApiResponse.success(
       res,
@@ -128,13 +129,13 @@ export class BaseController<T extends Record<string, any>> {
   /**
    * List records with pagination and filtering
    */
-  handleList = catchAsync(async (req: Request, res: Response) => {
+  handleList = catchAsync(async (req: RequestWithBody<Record<string, any>>, res: Response) => {
     const options = req.body;
     const preFilter: Record<string, any> = {};
 
     // Standard industrial multi-tenancy check
-    if ((req as any).user?.tenantId) {
-      preFilter.tenantId = (req as any).user.tenantId;
+    if (req.user?.tenantId) {
+      preFilter.tenantId = req.user.tenantId;
     }
 
     // Standard soft-delete check if applicable
@@ -152,7 +153,7 @@ export class BaseController<T extends Record<string, any>> {
   /**
    * Bulk Create Records
    */
-  handleCreateMany = catchAsync(async (req: Request, res: Response) => {
+  handleCreateMany = catchAsync(async (req: RequestWithBody<Partial<T>[]>, res: Response) => {
     const result = await this.service.createMany(req.body);
     return ApiResponse.success(
       res,
@@ -165,7 +166,7 @@ export class BaseController<T extends Record<string, any>> {
   /**
    * Bulk Update Records based on filter
    */
-  handleUpdateMany = catchAsync(async (req: Request, res: Response) => {
+  handleUpdateMany = catchAsync(async (req: RequestWithBody<{ filter: Record<string, any>; data: Partial<T> }>, res: Response) => {
     const { filter, data } = req.body;
     const result = await this.service.updateMany(filter, data);
     return ApiResponse.success(
@@ -179,7 +180,7 @@ export class BaseController<T extends Record<string, any>> {
   /**
    * Bulk Delete Records based on filter
    */
-  handleDeleteMany = catchAsync(async (req: Request, res: Response) => {
+  handleDeleteMany = catchAsync(async (req: RequestWithBody<Record<string, any>>, res: Response) => {
     const result = await this.service.deleteMany(req.body);
     return ApiResponse.success(
       res,

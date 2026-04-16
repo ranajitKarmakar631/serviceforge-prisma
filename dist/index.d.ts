@@ -5,6 +5,7 @@
  */
 export * from "./PrismaClientManager.js";
 export * from "./base/index.js";
+export * from "./types.js";
 export * from "./utils/index.js";
 export * from "./validations/index.js";
 export * from "./middlewares/errorMiddleware.js";

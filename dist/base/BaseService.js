@@ -1,8 +1,3 @@
-/**
- * © 2026 Rana J.
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
 import logger from "../utils/logger.js";
 import { AppError } from "../utils/AppError.js";
 /**
@@ -29,7 +24,8 @@ export class BaseService {
             return await this.model.create({ data });
         }
         catch (error) {
-            logger.error(`Error creating ${this.modelName}: ${error.message}`);
+            const message = error instanceof Error ? error.message : String(error);
+            logger.error(`Error creating ${this.modelName}: ${message}`);
             throw error;
         }
     }
@@ -41,7 +37,8 @@ export class BaseService {
             return await this.model.findUnique({ where: { id } });
         }
         catch (error) {
-            logger.error(`Error finding ${this.modelName} by ID: ${error.message}`);
+            const message = error instanceof Error ? error.message : String(error);
+            logger.error(`Error finding ${this.modelName} by ID: ${message}`);
             throw error;
         }
     }
@@ -54,7 +51,8 @@ export class BaseService {
             return await this.model.update({ where: { id }, data });
         }
         catch (error) {
-            logger.error(`Error updating ${this.modelName} by ID: ${error.message}`);
+            const message = error instanceof Error ? error.message : String(error);
+            logger.error(`Error updating ${this.modelName} by ID: ${message}`);
             throw error;
         }
     }
@@ -66,7 +64,8 @@ export class BaseService {
             return await this.model.updateMany({ where: query, data });
         }
         catch (error) {
-            logger.error(`Error updating ${this.modelName} with query: ${error.message}`);
+            const message = error instanceof Error ? error.message : String(error);
+            logger.error(`Error updating ${this.modelName} with query: ${message}`);
             throw error;
         }
     }
@@ -79,7 +78,8 @@ export class BaseService {
             return await this.model.delete({ where: { id } });
         }
         catch (error) {
-            logger.error(`Error deleting ${this.modelName} by ID: ${error.message}`);
+            const message = error instanceof Error ? error.message : String(error);
+            logger.error(`Error deleting ${this.modelName} by ID: ${message}`);
             throw error;
         }
     }
@@ -91,7 +91,8 @@ export class BaseService {
             return await this.model.findMany(query);
         }
         catch (error) {
-            logger.error(`Error in ${this.modelName} findMany: ${error.message}`);
+            const message = error instanceof Error ? error.message : String(error);
+            logger.error(`Error in ${this.modelName} findMany: ${message}`);
             throw error;
         }
     }
@@ -103,7 +104,8 @@ export class BaseService {
             return await this.model.findFirst(query);
         }
         catch (error) {
-            logger.error(`Error in ${this.modelName} findFirst: ${error.message}`);
+            const message = error instanceof Error ? error.message : String(error);
+            logger.error(`Error in ${this.modelName} findFirst: ${message}`);
             throw error;
         }
     }
@@ -115,7 +117,8 @@ export class BaseService {
             return await this.model.count({ where: query });
         }
         catch (error) {
-            logger.error(`Error in ${this.modelName} count: ${error.message}`);
+            const message = error instanceof Error ? error.message : String(error);
+            logger.error(`Error in ${this.modelName} count: ${message}`);
             throw error;
         }
     }
@@ -215,11 +218,15 @@ export class BaseService {
      */
     async createMany(data) {
         try {
+            if (!this.model.createMany) {
+                throw new AppError(`createMany NOT supported for model ${this.modelName}`, 400);
+            }
             logger.info(`Bulk creating ${data.length} ${this.modelName} records`);
             return await this.model.createMany({ data });
         }
         catch (error) {
-            logger.error(`Error in bulk creating ${this.modelName}: ${error.message}`);
+            const message = error instanceof Error ? error.message : String(error);
+            logger.error(`Error in bulk creating ${this.modelName}: ${message}`);
             throw error;
         }
     }
@@ -232,7 +239,8 @@ export class BaseService {
             return await this.model.updateMany({ where: query, data });
         }
         catch (error) {
-            logger.error(`Error in bulk updating ${this.modelName}: ${error.message}`);
+            const message = error instanceof Error ? error.message : String(error);
+            logger.error(`Error in bulk updating ${this.modelName}: ${message}`);
             throw error;
         }
     }
@@ -245,7 +253,8 @@ export class BaseService {
             return await this.model.deleteMany({ where: query });
         }
         catch (error) {
-            logger.error(`Error in bulk deleting ${this.modelName}: ${error.message}`);
+            const message = error instanceof Error ? error.message : String(error);
+            logger.error(`Error in bulk deleting ${this.modelName}: ${message}`);
             throw error;
         }
     }

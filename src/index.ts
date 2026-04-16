@@ -10,6 +10,9 @@ export * from "./PrismaClientManager.js";
 // Base
 export * from "./base/index.js";
 
+// Types
+export * from "./types.js";
+
 // Utils
 export * from "./utils/index.js";
 

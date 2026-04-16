@@ -4,7 +4,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { BaseService } from "./BaseService.js";
-import { Request, Response } from "express";
+import { Response } from "express";
 /**
  * 🏛️ BaseController
  * Provides standard CRUD handlers for all modules.
@@ -18,50 +18,50 @@ export declare class BaseController<T extends Record<string, any>> {
     /**
      * Create a new record
      */
-    handleCreate: (req: Request, res: Response, next: import("express").NextFunction) => void;
+    handleCreate: (req: import("express").Request, res: Response, next: import("express").NextFunction) => void;
     /**
      * Find a record by ID
      */
-    handleFindById: (req: Request, res: Response, next: import("express").NextFunction) => void;
+    handleFindById: (req: import("express").Request, res: Response, next: import("express").NextFunction) => void;
     /**
      * Update a record by ID
      */
-    handleUpdateById: (req: Request, res: Response, next: import("express").NextFunction) => void;
+    handleUpdateById: (req: import("express").Request, res: Response, next: import("express").NextFunction) => void;
     /**
      * Update records based on filter
      */
-    handleUpdate: (req: Request, res: Response, next: import("express").NextFunction) => void;
+    handleUpdate: (req: import("express").Request, res: Response, next: import("express").NextFunction) => void;
     /**
      * Delete a record by ID
      */
-    handleDeleteById: (req: Request, res: Response, next: import("express").NextFunction) => void;
+    handleDeleteById: (req: import("express").Request, res: Response, next: import("express").NextFunction) => void;
     /**
      * Find many records
      */
-    handleFindMany: (req: Request, res: Response, next: import("express").NextFunction) => void;
+    handleFindMany: (req: import("express").Request, res: Response, next: import("express").NextFunction) => void;
     /**
      * Find first record matching query
      */
-    handleFindFirst: (req: Request, res: Response, next: import("express").NextFunction) => void;
+    handleFindFirst: (req: import("express").Request, res: Response, next: import("express").NextFunction) => void;
     /**
      * Count records
      */
-    handleCount: (req: Request, res: Response, next: import("express").NextFunction) => void;
+    handleCount: (req: import("express").Request, res: Response, next: import("express").NextFunction) => void;
     /**
      * List records with pagination and filtering
      */
-    handleList: (req: Request, res: Response, next: import("express").NextFunction) => void;
+    handleList: (req: import("express").Request, res: Response, next: import("express").NextFunction) => void;
     /**
      * Bulk Create Records
      */
-    handleCreateMany: (req: Request, res: Response, next: import("express").NextFunction) => void;
+    handleCreateMany: (req: import("express").Request, res: Response, next: import("express").NextFunction) => void;
     /**
      * Bulk Update Records based on filter
      */
-    handleUpdateMany: (req: Request, res: Response, next: import("express").NextFunction) => void;
+    handleUpdateMany: (req: import("express").Request, res: Response, next: import("express").NextFunction) => void;
     /**
      * Bulk Delete Records based on filter
      */
-    handleDeleteMany: (req: Request, res: Response, next: import("express").NextFunction) => void;
+    handleDeleteMany: (req: import("express").Request, res: Response, next: import("express").NextFunction) => void;
 }
 //# sourceMappingURL=BaseController.d.ts.map
