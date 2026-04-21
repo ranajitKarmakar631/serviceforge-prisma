@@ -1,11 +1,12 @@
 {
-  "name": "serviceforge-prisma",
-  "version": "1.0.0",
+  "name": "@ranajit-karmakar/serviceforge-prisma",
+  "version": "1.1.4",
   "description": "An industrialized, high-performance Prisma ORM boilerplate and utility toolkit containing connection pooling, strict base controllers, global middlewares, and unified authentication handlers mapped for scalable microservice architectures.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist",
+    "bin",
     "prisma/schema.prisma"
   ],
   "bin": {
